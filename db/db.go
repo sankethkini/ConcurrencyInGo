@@ -1,16 +1,12 @@
 package db
 
 import (
+	"fmt"
+
+	"github.com/sankethkini/ConcurrencyInGo/config"
 	"github.com/sankethkini/ConcurrencyInGo/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-)
-
-const (
-	TableName = "items"
-	DbName    = "itemdb"
-	Password  = "1234"
-	UserName  = "root"
 )
 
 var ScrapData = []model.BaseItem{
@@ -55,18 +51,25 @@ type Client struct {
 }
 
 func (c *Client) IntializeDB() {
-	dsn := "root:1234@tcp(127.0.0.1:3306)/itemdb?charset=utf8mb4&parseTime=True&loc=Local"
+	conf := config.LoadConfig()
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", conf.DataBase.User, conf.DataBase.Password, conf.DataBase.Host, conf.DataBase.DBName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
 	if err != nil {
 		panic(err)
 	}
 	c.db = db
+
 	if !db.Migrator().HasTable(&model.BaseItem{}) {
 		err := c.db.AutoMigrate(&model.BaseItem{})
 		if err != nil {
 			panic(err)
 		}
-		c.addData()
+		err = c.addData()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 }
@@ -74,6 +77,7 @@ func (c *Client) IntializeDB() {
 func (c *Client) ReadDB() ([]model.BaseItem, error) {
 	var items []model.BaseItem
 	res := c.db.Find(&items)
+
 	if res.Error != nil {
 		return nil, res.Error
 	}

@@ -16,7 +16,6 @@ const (
 
 //every type of item should implement this
 type Item interface {
-	GetDetails() (string, float64, int, float64, float64)
 	Calc() float64
 }
 
@@ -29,12 +28,8 @@ type BaseItem struct {
 	Typ      string
 }
 
-func (b *BaseItem) GetDetails() (name string, price float64, quantity int, total float64) {
-	name = b.Name
-	price = b.Price
-	quantity = b.Quantity
-	total = b.Total
-	return
+func NewBaseItem(name string, price float64, typ string, quantity int) BaseItem {
+	return BaseItem{Name: name, Price: price, Typ: typ, Quantity: quantity}
 }
 
 func (b *BaseItem) Calc() float64 {
@@ -62,8 +57,4 @@ func (b *BaseItem) Calc() float64 {
 		b.Total = b.Price
 	}
 	return b.Total
-}
-
-func NewBaseItem(name string, price float64, typ string, quantity int) BaseItem {
-	return BaseItem{Name: name, Price: price, Typ: typ, Quantity: quantity}
 }

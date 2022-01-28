@@ -64,10 +64,9 @@ func TestItems(t *testing.T) {
 	for _, val := range scrapData {
 		bs := NewBaseItem(val.Name, val.Price, val.Typ, val.Quantity)
 		bs.Calc()
-		_, _, _, total := bs.GetDetails()
-		if total != val.exp {
+		if bs.Total != val.exp {
 
-			t.Errorf("inncorrect total calculation exp:%v got:%v", val.exp, total)
+			t.Errorf("inncorrect total calculation exp:%v got:%v", val.exp, bs.Total)
 		}
 	}
 }

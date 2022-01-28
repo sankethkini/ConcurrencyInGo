@@ -42,6 +42,7 @@ var ScrapData = []model.BaseItem{
 	},
 }
 
+//mockgen -destination db/mockdb.go -package db github.com/sankethkini/ConcurrencyInGo/db DBHelper
 type DBHelper interface {
 	ReadDB() ([]model.BaseItem, error)
 }

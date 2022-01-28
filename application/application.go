@@ -18,15 +18,16 @@ type MyApp struct {
 }
 
 func (app *MyApp) Start() {
-	app.wt.Add(1)
+
 	rows, err := app.sqlClient.ReadDB()
 	if err != nil {
 		fmt.Println("cannot read db %w", err)
 		return
 	}
+	app.wt.Add(1)
 	out := app.AddToList(rows)
 	out1 := app.CalcTotal(out)
-	out2 := app.ItemtoColl(out1)
+	out2 := app.ItemToCollection(out1)
 	app.DisplayItems(out2)
 	app.wt.Wait()
 }
@@ -59,7 +60,7 @@ func (app *MyApp) CalcTotal(in chan model.BaseItem) chan model.BaseItem {
 	return out
 }
 
-func (app *MyApp) ItemtoColl(ch chan model.BaseItem) chan model.BaseItem {
+func (app *MyApp) ItemToCollection(ch chan model.BaseItem) chan model.BaseItem {
 	out := make(chan model.BaseItem)
 	go func() {
 		defer close(out)
@@ -74,13 +75,9 @@ func (app *MyApp) ItemtoColl(ch chan model.BaseItem) chan model.BaseItem {
 }
 
 func (app *MyApp) DisplayItems(ch <-chan model.BaseItem) {
-
 	go func() {
-
 		for val := range ch {
-
-			name, price, quan, total := val.GetDetails()
-			fmt.Printf("Name: %s Price: %v quantity: %d  total: %v \n", name, price, quan, total)
+			fmt.Printf("Name: %s Price: %v quantity: %d  total: %v \n", val.Name, val.Price, val.Quantity, val.Total)
 		}
 		app.wt.Done()
 	}()

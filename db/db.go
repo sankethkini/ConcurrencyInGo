@@ -9,42 +9,9 @@ import (
 	"gorm.io/gorm"
 )
 
-var ScrapData = []model.BaseItem{
-	{
-		Name:     "abc",
-		Price:    12300,
-		Quantity: 12,
-		Typ:      "raw",
-	},
-	{
-		Name:     "def",
-		Price:    13000,
-		Quantity: 12,
-		Typ:      "imported",
-	},
-	{
-		Name:     "ghi",
-		Price:    1400,
-		Quantity: 33,
-		Typ:      "manufactured",
-	},
-	{
-		Name:     "jkl",
-		Price:    17800,
-		Quantity: 22,
-		Typ:      "raw",
-	},
-	{
-		Name:     "mno",
-		Price:    13500,
-		Quantity: 88,
-		Typ:      "imported",
-	},
-}
-
-//mockgen -destination db/mockdb.go -package db github.com/sankethkini/ConcurrencyInGo/db DBHelper
-type DBHelper interface {
-	ReadDB() ([]model.BaseItem, error)
+//go:generate mockgen -destination mockdb.go -package db github.com/sankethkini/ConcurrencyInGo/db DBHelper
+type IClinet interface {
+	ReadItems() ([]model.BaseItem, error)
 }
 
 type Client struct {
@@ -56,7 +23,6 @@ func (c *Client) IntializeDB() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", conf.DataBase.User, conf.DataBase.Password, conf.DataBase.Host, conf.DataBase.DBName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		panic(err)
 	}
@@ -72,10 +38,9 @@ func (c *Client) IntializeDB() {
 			panic(err)
 		}
 	}
-
 }
 
-func (c *Client) ReadDB() ([]model.BaseItem, error) {
+func (c *Client) ReadItems() ([]model.BaseItem, error) {
 	var items []model.BaseItem
 	res := c.db.Find(&items)
 
@@ -86,15 +51,18 @@ func (c *Client) ReadDB() ([]model.BaseItem, error) {
 }
 
 func (c *Client) addData() error {
-
-	for _, val := range ScrapData {
+	data, err := GetDataFromFile()
+	if err != nil {
+		return err
+	}
+	for _, val := range data {
 		c.db.Create(&val)
 	}
 	return nil
 }
 
 func NewClient() *Client {
-	db := Client{}
+	db := new(Client)
 	db.IntializeDB()
-	return &db
+	return db
 }

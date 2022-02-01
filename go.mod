@@ -6,6 +6,7 @@ require github.com/go-sql-driver/mysql v1.6.0 // indirect; direct
 
 require (
 	github.com/golang/mock v1.6.0
+	github.com/google/wire v0.5.0
 	gorm.io/driver/mysql v1.2.3
 	gorm.io/gorm v1.22.5
 )

@@ -9,7 +9,7 @@ import (
 )
 
 type MyApp struct {
-	sqlClient  db.DBHelper
+	sqlClient  db.IClinet
 	items      []model.BaseItem
 	finalItems []model.BaseItem
 	wt         sync.WaitGroup
@@ -17,9 +17,13 @@ type MyApp struct {
 	finalMutex sync.Mutex
 }
 
-func (app *MyApp) Start() {
+func NewApp(db db.IClinet) *MyApp {
+	app := MyApp{sqlClient: db}
+	return &app
+}
 
-	rows, err := app.sqlClient.ReadDB()
+func (app *MyApp) Start() {
+	rows, err := app.sqlClient.ReadItems()
 	if err != nil {
 		fmt.Println("cannot read db %w", err)
 		return
@@ -42,7 +46,6 @@ func (app *MyApp) AddToList(items []model.BaseItem) chan model.BaseItem {
 			app.itemMutex.Unlock()
 			out <- it
 		}
-
 	}()
 	return out
 }
@@ -81,9 +84,4 @@ func (app *MyApp) DisplayItems(ch <-chan model.BaseItem) {
 		}
 		app.wt.Done()
 	}()
-}
-
-func NewApp(db db.DBHelper) *MyApp {
-	app := MyApp{sqlClient: db}
-	return &app
 }

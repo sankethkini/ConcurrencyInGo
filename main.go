@@ -1,11 +1,10 @@
 package main
 
 import (
-	"github.com/sankethkini/ConcurrencyInGo/application"
-	"github.com/sankethkini/ConcurrencyInGo/db"
+	"github.com/sankethkini/ConcurrencyInGo/provider"
 )
 
 func main() {
-	ap := application.NewApp(db.NewClient())
+	ap := provider.IntializeApp()
 	ap.Start()
 }

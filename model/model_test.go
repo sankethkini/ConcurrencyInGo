@@ -1,9 +1,11 @@
 package model
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestItems(t *testing.T) {
-	var scrapData = []struct {
+	scrapData := []struct {
 		Name     string
 		Price    float64
 		Quantity int
@@ -65,7 +67,6 @@ func TestItems(t *testing.T) {
 		bs := NewBaseItem(val.Name, val.Price, val.Typ, val.Quantity)
 		bs.Calc()
 		if bs.Total != val.exp {
-
 			t.Errorf("inncorrect total calculation exp:%v got:%v", val.exp, bs.Total)
 		}
 	}

@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/sankethkini/ConcurrencyInGo/config"
 	"github.com/sankethkini/ConcurrencyInGo/db"
 	"github.com/sankethkini/ConcurrencyInGo/model"
 )
 
 type MyApp struct {
-	sqlClient  db.IClinet
+	sqlClient  db.DBHelper
 	items      []model.BaseItem
 	finalItems []model.BaseItem
 	wt         sync.WaitGroup
@@ -17,7 +18,7 @@ type MyApp struct {
 	finalMutex sync.Mutex
 }
 
-func NewApp(db db.IClinet) *MyApp {
+func NewApp(db db.DBHelper) *MyApp {
 	app := MyApp{sqlClient: db}
 	return &app
 }
@@ -52,10 +53,11 @@ func (app *MyApp) AddToList(items []model.BaseItem) chan model.BaseItem {
 
 func (app *MyApp) CalcTotal(in chan model.BaseItem) chan model.BaseItem {
 	out := make(chan model.BaseItem)
+	cfg := config.LoadConfig()
 	go func() {
 		defer close(out)
 		for val := range in {
-			val.Calc()
+			val.Calc(cfg)
 			out <- val
 		}
 	}()

@@ -10,7 +10,7 @@ import (
 )
 
 var appSet = wire.NewSet(
-	wire.InterfaceValue(new(db.IClinet), db.NewClient()),
+	wire.InterfaceValue(new(db.DBHelper), db.NewClient()),
 	application.NewApp,
 )
 

@@ -3,6 +3,7 @@ database:
   password: 1234
   host: localhost:3306
   dbname: itemdb
+
 tax-rates:
   raw-tax: 12.5
   import-tax: 10

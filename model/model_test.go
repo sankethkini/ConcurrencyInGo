@@ -2,6 +2,9 @@ package model
 
 import (
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/sankethkini/ConcurrencyInGo/config"
 )
 
 func TestItems(t *testing.T) {
@@ -61,11 +64,30 @@ func TestItems(t *testing.T) {
 			Typ:      "imported",
 			exp:      175,
 		},
+		{
+			Name:     "some",
+			Price:    150,
+			Quantity: 33,
+			Typ:      "some",
+			exp:      150,
+		},
 	}
+
+	var rat config.AppConfig
+	rat.TaxRates.RawTax = 12.5
+	rat.TaxRates.ImportTax = 10
+	rat.TaxRates.ManufacturedExtra = 2
+	rat.TaxRates.Surcharge100 = 5
+	rat.TaxRates.Surcharge200 = 10
+	rat.TaxRates.SurchargeMore = 5
+	rat.TaxRates.ManufacturedTax = 12.5
 
 	for _, val := range scrapData {
 		bs := NewBaseItem(val.Name, val.Price, val.Typ, val.Quantity)
-		bs.Calc()
+		ctrl := gomock.NewController(t)
+		cfg := config.NewMockIConfig(ctrl)
+		cfg.EXPECT().LoadConfig().Return(rat)
+		bs.Calc(cfg.LoadConfig())
 		if bs.Total != val.exp {
 			t.Errorf("inncorrect total calculation exp:%v got:%v", val.exp, bs.Total)
 		}

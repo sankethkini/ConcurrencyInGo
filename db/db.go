@@ -9,8 +9,9 @@ import (
 	"gorm.io/gorm"
 )
 
+//nolint: revive
 //go:generate mockgen -destination mockdb.go -package db github.com/sankethkini/ConcurrencyInGo/db DBHelper
-type IClinet interface {
+type DBHelper interface {
 	ReadItems() ([]model.BaseItem, error)
 }
 
@@ -50,6 +51,7 @@ func (c *Client) ReadItems() ([]model.BaseItem, error) {
 	return items, nil
 }
 
+//nolint: gosec
 func (c *Client) addData() error {
 	data, err := GetDataFromFile()
 	if err != nil {

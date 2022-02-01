@@ -15,8 +15,8 @@ import (
 // Injectors from wire.go:
 
 func IntializeApp() *application.MyApp {
-	iClinet := _wireClientValue
-	myApp := application.NewApp(iClinet)
+	dbHelper := _wireClientValue
+	myApp := application.NewApp(dbHelper)
 	return myApp
 }
 
@@ -26,4 +26,4 @@ var (
 
 // wire.go:
 
-var appSet = wire.NewSet(wire.InterfaceValue(new(db.IClinet), db.NewClient()), application.NewApp)
+var appSet = wire.NewSet(wire.InterfaceValue(new(db.DBHelper), db.NewClient()), application.NewApp)

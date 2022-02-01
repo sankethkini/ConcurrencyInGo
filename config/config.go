@@ -6,6 +6,11 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+//go:generate mockgen -destination config_mock.go -package config github.com/sankethkini/ConcurrencyInGo/config IConfig
+type IConfig interface {
+	LoadConfig() AppConfig
+}
+
 type AppConfig struct {
 	DataBase struct {
 		User     string `yaml:"user"`
@@ -13,9 +18,7 @@ type AppConfig struct {
 		Host     string `yaml:"host"`
 		DBName   string `yaml:"dbname"`
 	} `yaml:"database"`
-}
 
-type TaxConstants struct {
 	TaxRates struct {
 		RawTax            float64 `yaml:"raw-tax"`
 		ImportTax         float64 `yaml:"import-tax"`
@@ -29,16 +32,6 @@ type TaxConstants struct {
 
 func LoadConfig() AppConfig {
 	var config AppConfig
-	err := cleanenv.ReadConfig("application.yaml", &config)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return config
-}
-
-func LoadTaxConstants() TaxConstants {
-	var config TaxConstants
-
 	err := cleanenv.ReadConfig("application.yaml", &config)
 	if err != nil {
 		fmt.Println(err)

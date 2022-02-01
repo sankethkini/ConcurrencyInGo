@@ -5,10 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
-var rates = config.LoadTaxConstants()
-
 type Item interface {
-	Calc() float64
+	Calc(config.IConfig) float64
 }
 
 type BaseItem struct {
@@ -24,7 +22,7 @@ func NewBaseItem(name string, price float64, typ string, quantity int) BaseItem 
 	return BaseItem{Name: name, Price: price, Typ: typ, Quantity: quantity}
 }
 
-func (b *BaseItem) Calc() float64 {
+func (b *BaseItem) Calc(rates config.AppConfig) float64 {
 	switch b.Typ {
 	case "raw":
 		b.Total = b.Price

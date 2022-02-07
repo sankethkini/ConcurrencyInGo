@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/sankethkini/ConcurrencyInGo/config"
 	"github.com/sankethkini/ConcurrencyInGo/db"
 	"github.com/sankethkini/ConcurrencyInGo/model"
 )
@@ -44,10 +45,11 @@ var ScrapData = []model.BaseItem{
 func TestDisplay(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mock := db.NewMockDBHelper(ctrl)
-
+	mockRates := config.NewMockItaxRates(ctrl)
 	mock.EXPECT().ReadItems().Times(1).Return(ScrapData, nil)
+	mockRates.EXPECT().GetTaxRates().Times(5).Return(config.TaxRates{RawTax: 12.5, ImportTax: 10, Surcharge100: 5, Surcharge200: 10, SurchargeMore: 5, ManufacturedTax: 12.5, ManufacturedExtra: 2})
 
-	app := NewApp(mock)
+	app := NewApp(mock, mockRates)
 	app.Start()
 	for i := range app.finalItems {
 		if app.finalItems[i].Name != ScrapData[i].Name {

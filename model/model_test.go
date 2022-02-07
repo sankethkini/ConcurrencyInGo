@@ -73,21 +73,22 @@ func TestItems(t *testing.T) {
 		},
 	}
 
-	var rat config.AppConfig
-	rat.TaxRates.RawTax = 12.5
-	rat.TaxRates.ImportTax = 10
-	rat.TaxRates.ManufacturedExtra = 2
-	rat.TaxRates.Surcharge100 = 5
-	rat.TaxRates.Surcharge200 = 10
-	rat.TaxRates.SurchargeMore = 5
-	rat.TaxRates.ManufacturedTax = 12.5
+	tax := config.TaxRates{
+		RawTax:            12.5,
+		ImportTax:         10,
+		ManufacturedExtra: 2,
+		Surcharge100:      5,
+		Surcharge200:      10,
+		SurchargeMore:     5,
+		ManufacturedTax:   12.5,
+	}
 
 	for _, val := range scrapData {
 		bs := NewBaseItem(val.Name, val.Price, val.Typ, val.Quantity)
 		ctrl := gomock.NewController(t)
-		cfg := config.NewMockIConfig(ctrl)
-		cfg.EXPECT().LoadConfig().Return(rat)
-		bs.Calc(cfg.LoadConfig())
+		cfg := config.NewMockItaxRates(ctrl)
+		cfg.EXPECT().GetTaxRates().Return(tax)
+		bs.Calc(cfg.GetTaxRates())
 		if bs.Total != val.exp {
 			t.Errorf("inncorrect total calculation exp:%v got:%v", val.exp, bs.Total)
 		}

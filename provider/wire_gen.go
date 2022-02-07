@@ -9,6 +9,7 @@ package provider
 import (
 	"github.com/google/wire"
 	"github.com/sankethkini/ConcurrencyInGo/application"
+	"github.com/sankethkini/ConcurrencyInGo/config"
 	"github.com/sankethkini/ConcurrencyInGo/db"
 )
 
@@ -16,7 +17,9 @@ import (
 
 func IntializeApp() *application.MyApp {
 	dbHelper := _wireClientValue
-	myApp := application.NewApp(dbHelper)
+	appConfig := config.LoadConfig()
+	itaxRates := config.NewRates(appConfig)
+	myApp := application.NewApp(dbHelper, itaxRates)
 	return myApp
 }
 
@@ -26,4 +29,4 @@ var (
 
 // wire.go:
 
-var appSet = wire.NewSet(wire.InterfaceValue(new(db.DBHelper), db.NewClient()), application.NewApp)
+var appSet = wire.NewSet(wire.InterfaceValue(new(db.DBHelper), db.NewClient()), config.LoadConfig, config.NewRates, application.NewApp)

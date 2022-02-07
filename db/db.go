@@ -10,7 +10,7 @@ import (
 )
 
 //nolint: revive
-//go:generate mockgen -destination mockdb.go -package db github.com/sankethkini/ConcurrencyInGo/db DBHelper
+//go:generate mockgen -destination db_mock.go -package db github.com/sankethkini/ConcurrencyInGo/db DBHelper
 type DBHelper interface {
 	ReadItems() ([]model.BaseItem, error)
 }

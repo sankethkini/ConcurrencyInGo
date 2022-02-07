@@ -16,10 +16,11 @@ type MyApp struct {
 	wt         sync.WaitGroup
 	itemMutex  sync.Mutex
 	finalMutex sync.Mutex
+	rates      config.ItaxRates
 }
 
-func NewApp(db db.DBHelper) *MyApp {
-	app := MyApp{sqlClient: db}
+func NewApp(db db.DBHelper, rt config.ItaxRates) *MyApp {
+	app := MyApp{sqlClient: db, rates: rt}
 	return &app
 }
 
@@ -53,11 +54,10 @@ func (app *MyApp) AddToList(items []model.BaseItem) chan model.BaseItem {
 
 func (app *MyApp) CalcTotal(in chan model.BaseItem) chan model.BaseItem {
 	out := make(chan model.BaseItem)
-	cfg := config.LoadConfig()
 	go func() {
 		defer close(out)
 		for val := range in {
-			val.Calc(cfg)
+			val.Calc(app.rates.GetTaxRates())
 			out <- val
 		}
 	}()

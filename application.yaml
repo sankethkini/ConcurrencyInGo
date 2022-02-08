@@ -1,0 +1,14 @@
+database:
+  user: root
+  password: 1234
+  host: localhost:3306
+  dbname: itemdb
+
+tax-rates:
+  raw-tax: 12.5
+  import-tax: 10
+  surcharge-100: 5
+  surcharge-200: 10
+  surcharge-more: 5
+  manufactured-tax: 12.5
+  manufactured-extra: 2
